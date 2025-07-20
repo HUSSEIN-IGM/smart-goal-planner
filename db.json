@@ -1,0 +1,18 @@
+{
+  "goals": [
+    {
+      "id": "a79f",
+      "name": "travels",
+      "target": 70000,
+      "amountSaved": 0,
+      "saved": 70000
+    },
+    {
+      "id": "4bcd",
+      "name": "buy laptop",
+      "target": 40000,
+      "amountSaved": 0,
+      "saved": 40000
+    }
+  ]
+}
