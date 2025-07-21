@@ -1,56 +1,42 @@
-// src/components/GoalForm.js
 import React, { useState } from "react";
 
 function GoalForm({ onAddGoal }) {
   const [name, setName] = useState("");
-  const [target, setTarget] = useState("");
+  const [targetAmount, setTargetAmount] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    if (name.trim() === "" || target.trim() === "" || isNaN(target)) {
-      alert("Please enter a valid name and numeric target amount.");
-      return;
-    }
+    if (!name || !targetAmount) return;
 
     const newGoal = {
       name,
-      target: parseFloat(target),
-      amountSaved: 0
+      targetAmount: Number(targetAmount),
+      saved: 0,
     };
 
     onAddGoal(newGoal);
     setName("");
-    setTarget("");
+    setTargetAmount("");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6">
-      <h2 className="text-xl font-semibold mb-2">Add New Goal</h2>
-      <div className="mb-2">
-        <label className="block mb-1">Goal Name:</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded px-2 py-1"
-        />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">Target Amount (KES):</label>
-        <input
-          type="number"
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-          className="w-full border rounded px-2 py-1"
-        />
-      </div>
-      <button
-        type="submit"
-        className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-4 rounded"
-      >
-        Add Goal
-      </button>
+    <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+      <h2>Add New Goal</h2>
+      <input
+        type="text"
+        placeholder="Goal name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        style={{ marginRight: "10px", padding: "8px" }}
+      />
+      <input
+        type="number"
+        placeholder="Target Amount (KES)"
+        value={targetAmount}
+        onChange={(e) => setTargetAmount(e.target.value)}
+        style={{ marginRight: "10px", padding: "8px" }}
+      />
+      <button type="submit">Add Goal</button>
     </form>
   );
 }

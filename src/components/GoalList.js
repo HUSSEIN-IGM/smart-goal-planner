@@ -1,16 +1,16 @@
 import React from "react";
 import GoalCard from "./GoalCard";
 
-function GoalList({ goals, onDelete, onDeposit }) {
+function GoalList({ goals, onDeposit, onDelete, onUpdate }) {
   return (
-    <div className="goal-list">
-      <h2>Your Goals</h2>
+    <div>
       {goals.map((goal) => (
         <GoalCard
           key={goal.id}
           goal={goal}
-          onDelete={onDelete}
           onDeposit={onDeposit}
+          onDelete={onDelete}
+          onUpdate={onUpdate}
         />
       ))}
     </div>

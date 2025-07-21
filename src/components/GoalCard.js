@@ -1,37 +1,75 @@
 import React from "react";
-import DepositForm from "./DepositForm";
 
-function GoalCard({ goal, onDelete, onDeposit }) {
-  if (!goal) return null;
+function GoalCard({ goal, onDeposit, onDelete, onUpdate }) {
+  const { id, name, targetAmount, saved = 0, deadline } = goal;
 
-  const saved = goal.saved || 0;
-  const target = goal.targetAmount || 0;
+  const deadlineDate = new Date(deadline);
+  const today = new Date();
+  const timeDiff = deadlineDate - today;
+  const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 
-  const formattedSaved = saved.toLocaleString("en-KE", {
-    style: "currency",
-    currency: "KES",
-  });
+  const isCompleted = saved >= targetAmount;
+  const isOverdue = !isCompleted && daysLeft < 0;
+  const isNearDeadline = !isCompleted && daysLeft >= 0 && daysLeft <= 30;
 
-  const formattedTarget = target.toLocaleString("en-KE", {
-    style: "currency",
-    currency: "KES",
-  });
+  const cardStyle = {
+    border: isOverdue
+      ? "2px solid red"
+      : isNearDeadline
+      ? "2px solid orange"
+      : "2px solid lightgray",
+    padding: "1rem",
+    marginBottom: "1rem",
+    borderRadius: "10px",
+  };
 
-  const progress = target > 0 ? Math.min((saved / target) * 100, 100) : 0;
+  const handleDeposit = () => {
+    const amount = parseFloat(prompt("Enter deposit amount:"));
+    if (!isNaN(amount)) {
+      onDeposit(id, amount);
+    }
+  };
+
+  const handleEdit = () => {
+    const newName = prompt("New name:", name);
+    const newTarget = parseFloat(prompt("New target amount:", targetAmount));
+    const newDeadline = prompt("New deadline (YYYY-MM-DD):", deadline);
+    if (newName && !isNaN(newTarget) && newDeadline) {
+      onUpdate({
+        ...goal,
+        name: newName,
+        targetAmount: newTarget,
+        deadline: newDeadline,
+      });
+    }
+  };
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "10px", marginBottom: "20px" }}>
-      <h3>{goal.name}</h3>
+    <div style={cardStyle}>
+      <h3>{name}</h3>
       <p>
-        Saved: {formattedSaved} / {formattedTarget}
+        Target: KES {targetAmount.toLocaleString()} <br />
+        Saved: KES {saved.toLocaleString()}
       </p>
-      <div style={{ background: "#e0e0e0", borderRadius: "8px", overflow: "hidden", height: "15px", marginBottom: "10px" }}>
-        <div style={{ width: `${progress}%`, background: "green", height: "100%" }}></div>
-      </div>
-      <DepositForm goal={goal} onDeposit={onDeposit} />
-      <button onClick={() => onDelete(goal.id)} style={{ marginTop: "10px", background: "red", color: "white", padding: "5px 10px" }}>
-        Delete
-      </button>
+      {!isCompleted && (
+        <p>
+          🕒 <strong>
+            {daysLeft < 0 ? "Deadline passed" : `${daysLeft} days left`}
+          </strong>
+        </p>
+      )}
+      {isOverdue && (
+        <p style={{ color: "red" }}>⚠️ Deadline has passed! Goal not completed.</p>
+      )}
+      {isNearDeadline && (
+        <p style={{ color: "orange" }}>
+          ⚠️ Less than 30 days left! Try to complete this goal.
+        </p>
+      )}
+      {isCompleted && <p style={{ color: "green" }}>✅ Goal completed!</p>}
+      <button onClick={handleDeposit}>Deposit</button>
+      <button onClick={handleEdit}>Edit</button>
+      <button onClick={() => onDelete(id)}>Delete</button>
     </div>
   );
 }

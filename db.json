@@ -2,17 +2,38 @@
   "goals": [
     {
       "id": "a79f",
-      "name": "travels",
-      "target": 70000,
-      "amountSaved": 0,
-      "saved": 70000
+      "name": "Travels",
+      "targetAmount": 80000,
+      "saved": 144000,
+      "deadline": "2025-08-05"
     },
     {
       "id": "4bcd",
-      "name": "buy laptop",
-      "target": 40000,
-      "amountSaved": 0,
-      "saved": 40000
+      "name": "Buy Laptop",
+      "targetAmount": 50000,
+      "saved": 41200,
+      "deadline": "2025-08-10"
+    },
+    {
+      "id": "46d4",
+      "name": "Trip to Coast",
+      "targetAmount": 57000,
+      "saved": 60000,
+      "deadline": "2025-09-30"
+    },
+    {
+      "id": "aab2",
+      "name": "New Phone",
+      "targetAmount": 7600,
+      "saved": 8000,
+      "deadline": "2025-08-01"
+    },
+    {
+      "id": "d9c7",
+      "name": "ps5",
+      "targetAmount": 65000,
+      "saved": 5000,
+      "deadline": "22 5 2025"
     }
   ]
 }

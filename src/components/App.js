@@ -1,37 +1,43 @@
-import React, { useState, useEffect } from "react";
-import GoalList from "./GoalList";
+import React, { useEffect, useState } from "react";
 import GoalForm from "./GoalForm";
-import "./App.css"; // Assuming you have some styles in App.css
+import GoalList from "./GoalList";
+import Dashboard from "./Overview"; // ✅ Import the Dashboard
 
 function App() {
   const [goals, setGoals] = useState([]);
 
-  // Fetch goals from db.json on first load
   useEffect(() => {
-    fetch("http://localhost:3000/goals")
+    fetch("http://localhost:5000/goals")
       .then((res) => res.json())
-      .then(setGoals);
+      .then((data) => setGoals(data));
   }, []);
 
-  // Add a new goal
   function handleAddGoal(newGoal) {
-    fetch("http://localhost:3000/goals", {
+    fetch("http://localhost:5000/goals", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...newGoal, saved: 0 }),
+      body: JSON.stringify(newGoal),
     })
       .then((res) => res.json())
-      .then((savedGoal) => setGoals([...goals, savedGoal]));
+      .then((goalFromServer) => setGoals([...goals, goalFromServer]));
   }
 
-  // Deposit to an existing goal
+  function handleDeleteGoal(id) {
+    fetch(`http://localhost:5000/goals/${id}`, {
+      method: "DELETE",
+    }).then(() => {
+      const updatedGoals = goals.filter((goal) => goal.id !== id);
+      setGoals(updatedGoals);
+    });
+  }
+
   function handleDeposit(goalId, amount) {
     const goal = goals.find((g) => g.id === goalId);
-    const updatedGoal = { ...goal, saved: goal.saved + amount };
+    const updatedGoal = { ...goal, saved: (goal.saved || 0) + amount };
 
-    fetch(`http://localhost:3000/goals/${goalId}`, {
+    fetch(`http://localhost:5000/goals/${goalId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -39,46 +45,51 @@ function App() {
       body: JSON.stringify({ saved: updatedGoal.saved }),
     })
       .then((res) => res.json())
-      .then((updatedGoalFromServer) => {
+      .then((goalFromServer) => {
         const updatedGoals = goals.map((g) =>
-          g.id === goalId ? updatedGoalFromServer : g
+          g.id === goalFromServer.id ? goalFromServer : g
         );
         setGoals(updatedGoals);
       });
   }
 
-  // Delete a goal
-  function handleDeleteGoal(goalId) {
-    fetch(`http://localhost:3000/goals/${goalId}`, {
-      method: "DELETE",
-    }).then(() => {
-      setGoals(goals.filter((goal) => goal.id !== goalId));
-    });
+  function handleUpdateGoal(updatedGoal) {
+    fetch(`http://localhost:5000/goals/${updatedGoal.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: updatedGoal.name,
+        targetAmount: updatedGoal.targetAmount,
+        deadline: updatedGoal.deadline,
+      }),
+    })
+      .then((res) => res.json())
+      .then((goalFromServer) => {
+        const updatedGoals = goals.map((g) =>
+          g.id === goalFromServer.id ? goalFromServer : g
+        );
+        setGoals(updatedGoals);
+      });
   }
-
-  // Dashboard summary calculations
-  const totalTarget = goals.reduce((sum, g) => sum + Number(g.targetAmount), 0);
-  const totalSaved = goals.reduce((sum, g) => sum + Number(g.saved), 0);
-  const overallProgress =
-    totalTarget > 0 ? ((totalSaved / totalTarget) * 100).toFixed(2) : 0;
 
   return (
     <div className="App">
       <h1>Smart Goal Planner</h1>
 
-      <div className="dashboard">
-        <h2>Dashboard Overview</h2>
-        <p>Total Goals: {goals.length}</p>
-        <p>Total Target Amount: KES {totalTarget.toLocaleString()}</p>
-        <p>Total Saved: KES {totalSaved.toLocaleString()}</p>
-        <p>Overall Progress: {overallProgress}%</p>
-      </div>
+      {/* ✅ Dashboard Summary */}
+      <Dashboard goals={goals} />
 
+      {/* ✅ Goal Creation */}
       <GoalForm onAddGoal={handleAddGoal} />
+
+      {/* ✅ Goal List */}
       <GoalList
         goals={goals}
         onDeposit={handleDeposit}
         onDelete={handleDeleteGoal}
+        onUpdate={handleUpdateGoal}
       />
     </div>
   );

@@ -1,31 +1,25 @@
 import React, { useState } from "react";
 
 function DepositForm({ goal, onDeposit }) {
-  const [deposit, setDeposit] = useState("");
+  const [amount, setAmount] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    const depositAmount = parseFloat(deposit);
-    if (isNaN(depositAmount) || depositAmount <= 0) {
-      alert("Please enter a valid positive amount.");
-      return;
-    }
+    const depositAmount = Number(amount);
+    if (!depositAmount || depositAmount <= 0) return;
 
     onDeposit(goal.id, depositAmount);
-    setDeposit(""); // Clear input after deposit
+    setAmount("");
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "10px" }}>
+    <form onSubmit={handleSubmit} style={{ marginTop: "10px" }}>
       <input
         type="number"
-        value={deposit}
-        onChange={(e) => setDeposit(e.target.value)}
-        placeholder="KES to deposit"
-        min="0"
-        step="any"
-        style={{ marginRight: "5px" }}
+        placeholder="Deposit Amount (KES)"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        style={{ marginRight: "10px", padding: "6px" }}
       />
       <button type="submit">Deposit</button>
     </form>
